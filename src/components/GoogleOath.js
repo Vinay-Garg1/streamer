@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { signIn, signOut } from './actions';
 import { connect } from 'react-redux';
 export class GoogleOath extends Component {
-    state = { isLoggedIn: null };
     componentDidMount() {
         window.gapi.load('client:auth2', () => {
             window.gapi.client.init({
@@ -10,21 +9,21 @@ export class GoogleOath extends Component {
                 scope: 'email'
             }).then(() => {
                 this.auth = window.gapi.auth2.getAuthInstance();
-                this.setState({ isLoggedIn: this.auth.isSignedIn.get() });
+                this.onAuthChange(this.auth.isSignedIn.get()) //on initial load
                 this.auth.isSignedIn.listen(this.onAuthChange)
             });
         });
     }
     onAuthChange = (info) => {
         if (info)
-            this.state.signOut()
+            this.props.signIn(this.auth.currentUser.get().getId())
         else
-            this.state.signIn()
+            this.props.signOut()
     }
     renderUserStatus = () => {
-        if (this.state.isLoggedIn == null)
+        if (this.props.isLoggedIn == null)
             return null
-        else if (this.state.isLoggedIn)
+        else if (this.props.isLoggedIn)
             return (
                 <button onClick={() => this.auth.signOut()} className='ui red google button'>
                     <i className='google icon'></i> Sign out
@@ -43,5 +42,8 @@ export class GoogleOath extends Component {
         )
     }
 }
-
-export default connect(null, { signIn, signOut })(GoogleOath)
+const mapStateToProps = (state) => {
+    console.log(state)
+    return { isLoggedIn: state.auth.isSignIn };
+}
+export default connect(mapStateToProps, { signIn, signOut })(GoogleOath)
