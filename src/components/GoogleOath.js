@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-
+import { signIn, signOut } from './actions';
+import { connect } from 'react-redux';
 export class GoogleOath extends Component {
     state = { isLoggedIn: null };
     componentDidMount() {
@@ -15,9 +16,10 @@ export class GoogleOath extends Component {
         });
     }
     onAuthChange = (info) => {
-        this.setState({
-            isLoggedIn: this.auth.isSignedIn.get()
-        })
+        if (info)
+            this.state.signOut()
+        else
+            this.state.signIn()
     }
     renderUserStatus = () => {
         if (this.state.isLoggedIn == null)
@@ -42,4 +44,4 @@ export class GoogleOath extends Component {
     }
 }
 
-export default GoogleOath
+export default connect(null, { signIn, signOut })(GoogleOath)
