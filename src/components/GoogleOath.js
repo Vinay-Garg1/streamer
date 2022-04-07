@@ -43,7 +43,6 @@ export class GoogleOath extends Component {
     }
 }
 const mapStateToProps = (state) => {
-    console.log(state)
     return { isLoggedIn: state.auth.isSignIn };
 }
 export default connect(mapStateToProps, { signIn, signOut })(GoogleOath)
